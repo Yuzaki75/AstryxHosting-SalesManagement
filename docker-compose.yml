@@ -1,0 +1,27 @@
+services:
+  sales-app:
+    build: .
+    image: astryxnodes-sales-app:latest
+    container_name: astryxnodes-sales-app
+    restart: unless-stopped
+    ports:
+      - "${HOST_PORT:-3020}:3020"
+    environment:
+      NODE_ENV: production
+      PORT: 3020
+      DATABASE_PATH: /app/data/sales.db
+      SESSION_SECRET: ${SESSION_SECRET:?set SESSION_SECRET in .env}
+      SALES_API_KEY: ${SALES_API_KEY:-}
+      ALLOW_REGISTRATION: ${ALLOW_REGISTRATION:-false}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+    volumes:
+      - sales-db:/app/data
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://127.0.0.1:3020/api/health', r => process.exit(r.statusCode < 500 ? 0 : 1)).on('error', () => process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      start_period: 15s
+      retries: 3
+
+volumes:
+  sales-db:

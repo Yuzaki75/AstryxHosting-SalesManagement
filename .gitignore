@@ -1,0 +1,14 @@
+node_modules/
+.env
+.env.*
+!.env.example
+sales.db
+sales.db-shm
+sales.db-wal
+backups/
+*.corrupt-*
+npm-debug.log*
+.DS_Store
+.vscode/
+.idea/
+temp_restore/

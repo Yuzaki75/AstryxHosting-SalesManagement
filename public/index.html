@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>AstryxHosting — Sales Console</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%234c7bfa'/%3E%3Ctext x='12' y='17' font-family='Arial' font-size='13' font-weight='bold' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <!-- Login/Register Modal -->
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <div class="auth-tabs">
+                <button class="tab-btn active" data-tab="login">Login</button>
+                <button class="tab-btn" data-tab="register">Register</button>
+            </div>
+
+            <!-- Login Form -->
+            <div id="loginTab" class="auth-tab active">
+                <h2>Welcome back</h2>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="loginUsername">Username</label>
+                        <input type="text" id="loginUsername" name="username" autocomplete="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" name="password" autocomplete="current-password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Log in</button>
+                </form>
+                <div id="loginError" class="error-message"></div>
+            </div>
+
+            <!-- Register Form -->
+            <div id="registerTab" class="auth-tab">
+                <h2>Create an account</h2>
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label for="registerUsername">Username</label>
+                        <input type="text" id="registerUsername" name="username" minlength="3" maxlength="32" pattern="[A-Za-z0-9_.-]+" autocomplete="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerPassword">Password</label>
+                        <input type="password" id="registerPassword" name="password" autocomplete="new-password" required minlength="8">
+                    </div>
+                    <div class="form-group">
+                        <label for="repeatPassword">Repeat Password</label>
+                        <input type="password" id="repeatPassword" name="repeatPassword" autocomplete="new-password" required minlength="8">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Create account</button>
+                </form>
+                <div id="registerError" class="error-message"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="app" class="hidden">
+        <!-- Sidebar navigation (becomes a top bar on mobile) -->
+        <nav class="sidebar">
+            <div class="sidebar__brand">
+                <span class="brand-mark">A</span>
+                <div class="brand-text">
+                    <strong>AstryxHosting</strong>
+                    <span>Sales Console</span>
+                </div>
+            </div>
+
+            <div class="main-tabs">
+                <button class="main-tab-btn active" data-main-tab="home">
+                    <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5"/><path d="M5 9.5V20a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V9.5"/></svg>
+                    Home
+                </button>
+                <button class="main-tab-btn" data-main-tab="sales">
+                    <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 13v4"/><path d="M12 9v8"/><path d="M16 6v11"/></svg>
+                    Sales Management
+                </button>
+                <button class="main-tab-btn" data-main-tab="plans">
+                    <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5h14"/><path d="M5 12h14"/><path d="M5 19h14"/><circle cx="3" cy="5" r=".5" fill="currentColor"/><circle cx="3" cy="12" r=".5" fill="currentColor"/><circle cx="3" cy="19" r=".5" fill="currentColor"/></svg>
+                    Plans
+                </button>
+                <button class="main-tab-btn" data-main-tab="expirations">
+                    <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+                    Expirations
+                </button>
+                <button class="main-tab-btn" data-main-tab="statistics">
+                    <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17v-6"/><path d="M8 17v-3"/></svg>
+                    Statistics
+                </button>
+                <button class="main-tab-btn" data-main-tab="discord">
+                    <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9.5" cy="11" r="1"/><circle cx="14.5" cy="11" r="1"/><path d="M12 3c-5 0-8.5 3-8.5 7 0 4.8 3 11 5.5 11 .95 0 1.5-1.4 1.5-2.4 1 .3 2 .3 3 0 0 1 .55 2.4 1.5 2.4C17.5 21 20.5 14.8 20.5 10c0-4-3.5-7-8.5-7z"/></svg>
+                    Discord
+                </button>
+                <button class="main-tab-btn" data-main-tab="customers">
+                    <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><circle cx="17" cy="9" r="2.5"/><path d="M22 20c0-2.8-2-4.6-4.5-5"/></svg>
+                    Customers
+                </button>
+                <button class="main-tab-btn" data-main-tab="backups">
+                    <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg>
+                    Backups
+                </button>
+            </div>
+
+            <div class="sidebar__footer">
+                <button id="logoutBtn" class="btn btn-secondary btn-block">Log out</button>
+            </div>
+        </nav>
+
+        <div class="main-content">
+            <header class="topbar">
+                <div>
+                    <div class="topbar__heading">Sales Console</div>
+                </div>
+                <div class="header-actions">
+                    <div class="month-filter" id="monthFilterContainer" style="display: none;">
+                        <select id="monthFilter">
+                            <option value="">All Months</option>
+                        </select>
+                    </div>
+                </div>
+            </header>
+
+            <main class="content-area">
+                <!-- Home Tab Content -->
+                <div id="homeTab" class="tab-content active">
+                    <div class="container">
+                        <!-- Month Filter for Home Page -->
+                        <div class="home-month-filter">
+                            <label for="homeMonthFilter" class="home-month-filter__label">Filter by Month</label>
+                            <select id="homeMonthFilter" class="home-month-filter__select">
+                                <option value="">All Time</option>
+                            </select>
+                        </div>
+                        <!-- Statistics Cards -->
+                        <div class="stats-grid stats-grid--home">
+                            <div class="stat-card">
+                                <h3>Total Sales</h3>
+                                <p class="stat-month" id="totalSalesMonth"></p>
+                                <p class="stat-value" id="totalSales">0</p>
+                            </div>
+                            <div class="stat-card">
+                                <h3>Total Amount</h3>
+                                <p class="stat-value" id="totalAmount">₱0.00</p>
+                            </div>
+                            <div class="stat-card">
+                                <h3>Paid Sales</h3>
+                                <p class="stat-value" id="paidSales">0</p>
+                            </div>
+                            <div class="stat-card">
+                                <h3>Paid Amount</h3>
+                                <p class="stat-value" id="paidAmount">₱0.00</p>
+                            </div>
+                            <div class="stat-card">
+                                <h3>Pending Amount</h3>
+                                <p class="stat-value" id="pendingAmount">₱0.00</p>
+                            </div>
+                        </div>
+
+                        <!-- VPS Expenses -->
+                        <div class="vps-expenses-section">
+                            <h2>VPS Expenses</h2>
+                            <div class="vps-grid">
+                                <div class="vps-item">
+                                    <span class="vps-label">Panel</span>
+                                    <span class="vps-amount" id="panelAmount" data-usd="5.35">₱471.00</span>
+                                </div>
+                                <div class="vps-item">
+                                    <span class="vps-label">VDS 1</span>
+                                    <span class="vps-amount" id="vds1Amount">₱5,000.00</span>
+                                </div>
+                                <div class="vps-item">
+                                    <span class="vps-label">Ryzen 9</span>
+                                    <span class="vps-amount" id="ryzen9Amount">₱2,000.00</span>
+                                </div>
+                                <div class="vps-total">
+                                    <span class="vps-total-label">Total VPS Expenses</span>
+                                    <span class="vps-total-amount" id="vpsTotal">₱7,471.00</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Salary Distribution -->
+                        <div class="salary-section">
+                            <h2>Salary Distribution</h2>
+                            <div class="salary-grid">
+                                <div class="salary-card">
+                                    <h3>Owner</h3>
+                                    <p class="salary-value" id="ownerSalary">₱1,200.00</p>
+                                </div>
+                                <div class="salary-card">
+                                    <h3>Developer</h3>
+                                    <p class="salary-value" id="developerSalary">₱1,200.00</p>
+                                </div>
+                                <div class="salary-card">
+                                    <h3>Staff</h3>
+                                    <p class="salary-value" id="staffSalary">₱700.00</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sales Management Tab Content -->
+                <div id="salesTab" class="tab-content">
+                    <div class="container">
+                        <!-- Action Bar with Search -->
+                        <div class="action-bar">
+                            <div class="search-container">
+                                <input type="text" id="customerSearch" class="search-input" placeholder="Search by customer, plan or payment method...">
+                            </div>
+                            <div class="search-container" style="display: flex; gap: 0.5rem;">
+                                <select id="statusFilter" class="search-input" style="min-width: 110px;">
+                                    <option value="">All Statuses</option>
+                                    <option value="paid">Paid</option>
+                                    <option value="pending">Pending</option>
+                                </select>
+                                <select id="planFilter" class="search-input" style="min-width: 140px;">
+                                    <option value="">All Plans</option>
+                                </select>
+                            </div>
+                            <div class="action-bar__actions">
+                                <button id="exportBtn" class="btn btn-secondary" title="Export to Excel">Export</button>
+                                <label for="importFile" class="btn btn-secondary btn-file-label" title="Import from Excel">
+                                    Import
+                                    <input type="file" id="importFile" accept=".xlsx,.xls,.csv" class="btn-file-input">
+                                </label>
+                                <button id="addSaleBtn" class="btn btn-primary">+ Add New Sale</button>
+                            </div>
+                        </div>
+
+                        <!-- Sales Table -->
+                        <div class="table-container">
+                            <table id="salesTable" class="sales-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date Bought</th>
+                                        <th>Date Expiry</th>
+                                        <th>Customer Name</th>
+                                        <th>Plan</th>
+                                        <th>Amount</th>
+                                        <th>Promo</th>
+                                        <th>Payment Method</th>
+                                        <th>Status</th>
+                                        <th>Created By</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="salesTableBody">
+                                    <tr>
+                                        <td colspan="10" class="empty-state">No sales records found</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Plan Management Tab Content -->
+                <div id="plansTab" class="tab-content">
+                    <div class="container">
+                        <div class="action-bar plan-management-header">
+                            <div>
+                                <h2 class="plan-management-title">Plan catalogue</h2>
+                                <p class="plan-management-description">Create reusable server plans for the sales form. Changes only affect future sales.</p>
+                            </div>
+                            <div class="action-bar__actions">
+                                <button id="addPlanBtn" class="btn btn-primary">+ Add Plan</button>
+                            </div>
+                        </div>
+
+                        <div class="table-container">
+                            <table class="sales-table plans-table">
+                                <thead>
+                                    <tr>
+                                        <th>Plan</th>
+                                        <th>Category</th>
+                                        <th>CPU</th>
+                                        <th>RAM</th>
+                                        <th>Disk</th>
+                                        <th>Amount</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="plansTableBody">
+                                    <tr>
+                                        <td colspan="7" class="empty-state">Loading plans...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Expirations Tab Content -->
+                <div id="expirationsTab" class="tab-content">
+                    <div class="container">
+                        <p class="expirations-intro">Sales expiring within the next 4 days or expired up to 5 days ago.</p>
+                        <div class="home-month-filter toolbar-row">
+                            <label for="expirationsSearch" class="home-month-filter__label">Search</label>
+                            <input type="text" id="expirationsSearch" placeholder="Filter by customer or plan...">
+                            <select id="expirationsStatusFilter" class="home-month-filter__select">
+                                <option value="">All Statuses</option>
+                                <option value="paid">Paid</option>
+                                <option value="pending">Pending</option>
+                            </select>
+                        </div>
+                        <div class="table-container">
+                            <table id="expirationsTable" class="sales-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date Bought</th>
+                                        <th>Date Expiry</th>
+                                        <th>Days Left</th>
+                                        <th>Customer Name</th>
+                                        <th>Plan</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="expirationsTableBody">
+                                    <tr>
+                                        <td colspan="8" class="empty-state">No sales expiring soon</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Statistics Tab Content -->
+                <div id="statisticsTab" class="tab-content">
+                    <div class="container">
+                        <h2 class="statistics-title">Detailed Statistics</h2>
+                        
+                        <!-- Month Filter for Statistics Page -->
+                        <div class="home-month-filter">
+                            <label for="statisticsMonthFilter" class="home-month-filter__label">Filter by Month</label>
+                            <select id="statisticsMonthFilter" class="home-month-filter__select">
+                                <option value="">All Time</option>
+                            </select>
+                        </div>
+
+                        <!-- Revenue Overview -->
+                        <div class="stats-section">
+                            <h3 class="stats-section-title">Revenue Overview</h3>
+                            <div class="stats-grid stats-grid--statistics">
+                                <div class="stat-card">
+                                    <h4>Total Sales Count</h4>
+                                    <p class="stat-value" id="statsTotalSales">0</p>
+                                </div>
+                                <div class="stat-card">
+                                    <h4>Total Revenue</h4>
+                                    <p class="stat-value" id="statsTotalAmount">₱0.00</p>
+                                </div>
+                                <div class="stat-card">
+                                    <h4>Paid Sales</h4>
+                                    <p class="stat-value" id="statsPaidSales">0</p>
+                                </div>
+                                <div class="stat-card">
+                                    <h4>Paid Amount</h4>
+                                    <p class="stat-value" id="statsPaidAmount">₱0.00</p>
+                                </div>
+                                <div class="stat-card">
+                                    <h4>Pending Sales</h4>
+                                    <p class="stat-value" id="statsPendingSales">0</p>
+                                </div>
+                                <div class="stat-card">
+                                    <h4>Pending Amount</h4>
+                                    <p class="stat-value" id="statsPendingAmount">₱0.00</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Charts Section -->
+                        <div class="stats-section">
+                            <h3 class="stats-section-title">Visual Analytics</h3>
+                            <div class="charts-grid">
+                                <div class="chart-card">
+                                    <h4>Revenue Breakdown</h4>
+                                    <canvas id="revenueChart"></canvas>
+                                </div>
+                                <div class="chart-card">
+                                    <h4>Sales Status</h4>
+                                    <canvas id="salesStatusChart"></canvas>
+                                </div>
+                                <div class="chart-card">
+                                    <h4>Expense Distribution</h4>
+                                    <canvas id="expenseChart"></canvas>
+                                </div>
+                                <div class="chart-card">
+                                    <h4>Profit Overview</h4>
+                                    <canvas id="profitChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Expenses Breakdown -->
+                        <div class="stats-section">
+                            <h3 class="stats-section-title">Expenses Breakdown</h3>
+                            <div class="expenses-breakdown">
+                                <div class="expense-item">
+                                    <span class="expense-label">VPS Expenses</span>
+                                    <span class="expense-value" id="statsVdsExpenses">₱7,471.00</span>
+                                </div>
+                                <div class="expense-item">
+                                    <span class="expense-label">Total Salaries</span>
+                                    <span class="expense-value" id="statsTotalSalaries">₱3,100.00</span>
+                                </div>
+                                <div class="expense-item expense-total">
+                                    <span class="expense-label">Total Expenses</span>
+                                    <span class="expense-value" id="statsTotalExpenses">₱8,571.00</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Net Profit -->
+                        <div class="stats-section">
+                            <h3 class="stats-section-title">Profit Analysis</h3>
+                            <div class="profit-card">
+                                <div class="profit-item">
+                                    <span class="profit-label">Net Profit (Paid - Expenses)</span>
+                                    <span class="profit-value" id="statsNetProfit">₱0.00</span>
+                                </div>
+                                <div class="profit-item">
+                                    <span class="profit-label">Profit Margin</span>
+                                    <span class="profit-value" id="statsProfitMargin">0%</span>
+                                </div>
+                            </div>
+                        </div>
+                     </div>
+                </div>
+
+                <!-- Discord Tab Content -->
+                <div id="discordTab" class="tab-content">
+                    <div class="container">
+                        <h2 class="statistics-title">Discord Bot</h2>
+
+                        <div class="stats-section">
+                            <h3 class="stats-section-title">Status</h3>
+                            <div class="stats-grid stats-grid--statistics">
+                                <div class="stat-card">
+                                    <h4>Bot Status</h4>
+                                    <p class="stat-value" id="discordBotStatus">Checking...</p>
+                                </div>
+                                <div class="stat-card">
+                                    <h4>Bot Account</h4>
+                                    <p class="stat-value" id="discordBotUser" style="font-size: 1rem;">—</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="stats-section">
+                            <h3 class="stats-section-title">Configuration</h3>
+                            <div class="settings-panel">
+                                <div class="form-group">
+                                    <label for="discordToken">Bot Token</label>
+                                    <input type="password" id="discordToken" placeholder="Leave blank to keep existing token" autocomplete="off">
+                                    <small style="opacity: 0.7;" id="discordTokenMasked"></small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="discordGuildId">Server (Guild) ID</label>
+                                    <input type="text" id="discordGuildId" placeholder="Enable Developer Mode in Discord, right-click your server -> Copy ID">
+                                </div>
+                                <div class="form-group">
+                                    <label for="discordAdminRoleId">Admin Role ID (optional)</label>
+                                    <input type="text" id="discordAdminRoleId" placeholder="Right-click a role -> Copy ID">
+                                    <small style="opacity: 0.7;">Members with this role, or the Manage Server permission, can use the admin slash commands below. Leave blank to allow only Manage Server.</small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="discordChannelId">Notification Channel ID</label>
+                                    <input type="text" id="discordChannelId" placeholder="Right-click the channel -> Copy ID (optional; webhook can be used instead)">
+                                </div>
+                                <div class="form-group">
+                                    <label for="discordWebhook">Webhook URL (alternative to the bot)</label>
+                                    <input type="text" id="discordWebhook" placeholder="https://discord.com/api/webhooks/...">
+                                </div>
+                                <div class="form-group">
+                                    <label for="discordExpiringDays">Expiry Digest: remind days ahead</label>
+                                    <input type="number" id="discordExpiringDays" min="1" max="90" value="7">
+                                </div>
+                                <div class="form-group settings-checks">
+                                    <label style="display: flex; align-items: center; gap: .5rem;"><input type="checkbox" id="discordNotifySales" checked> Notify on new sale</label>
+                                    <label style="display: flex; align-items: center; gap: .5rem;"><input type="checkbox" id="discordNotifyRenewals" checked> Notify on renewal</label>
+                                    <label style="display: flex; align-items: center; gap: .5rem;"><input type="checkbox" id="discordNotifyExpiring" checked> Send daily expiry digest</label>
+                                </div>
+                                <div style="display: flex; gap: .75rem; flex-wrap: wrap;">
+                                    <button id="discordSaveBtn" class="btn btn-primary">Save &amp; Start Bot</button>
+                                    <button id="discordTestBtn" class="btn btn-secondary">Send Test Notification</button>
+                                </div>
+                                <p class="inline-message" id="discordMessage"></p>
+                            </div>
+                        </div>
+
+                        <div class="stats-section">
+                            <h3 class="stats-section-title">Slash Commands</h3>
+                            <div class="settings-panel">
+                                <ul class="meta-list">
+                                    <li><code>/plans</code> — list available hosting plans (everyone can use this)</li>
+                                    <li><code>/stats [month]</code> — total sales count and revenue (all time or per month)</li>
+                                    <li><code>/revenue [month]</code> — revenue breakdown by payment method</li>
+                                    <li><code>/expiring [days]</code> — subscriptions expiring soon (default 7 days)</li>
+                                    <li><code>/customer &lt;name&gt;</code> — customer profile, spending, and recent purchases</li>
+                                    <li><code>/status</code> — bot, database, and backup health</li>
+                                </ul>
+                                <p style="opacity: 0.7;">All commands except <code>/plans</code> require the configured Admin Role ID or the Manage Server permission. Replies are private to the person who ran the command. Create the bot at the <a href="https://discord.com/developers/applications" target="_blank" rel="noopener">Discord Developer Portal</a>, give it the <em>bot</em> scope with no special intents, and invite it to your server. Registering slash commands happens automatically on save.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Customers Tab Content -->
+                <div id="customersTab" class="tab-content">
+                    <div class="container">
+                        <div class="home-month-filter toolbar-row">
+                            <label for="customerListSearch" class="home-month-filter__label">Search</label>
+                            <input type="text" id="customerListSearch" placeholder="Search customers by name, Discord ID or contact...">
+                        </div>
+                        <div class="table-container">
+                            <table id="customersTable" class="sales-table">
+                                <thead>
+                                    <tr>
+                                        <th>Customer</th>
+                                        <th>Discord ID</th>
+                                        <th>Contact</th>
+                                        <th>Orders</th>
+                                        <th>Total Spent</th>
+                                        <th>Latest Expiry</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="customersTableBody">
+                                    <tr>
+                                        <td colspan="7" class="empty-state">No customers yet — they appear automatically when a sale is created</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Backups Tab Content -->
+                <div id="backupsTab" class="tab-content">
+                    <div class="container">
+                        <p class="expirations-intro">Backups of the sales database are created automatically once a day; a manual backup can be triggered below. The 10 most recent backups are kept.</p>
+                        <div style="display: flex; gap: 0.75rem; margin-bottom: 1rem;">
+                            <button id="createBackupBtn" class="btn btn-primary">Create Backup Now</button>
+                            <button id="refreshBackupsBtn" class="btn btn-secondary">Refresh</button>
+                        </div>
+                        <p class="inline-message" id="backupMessage"></p>
+                        <div class="table-container">
+                            <table class="sales-table">
+                                <thead>
+                                    <tr>
+                                        <th>File</th>
+                                        <th>Size</th>
+                                        <th>Created</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="backupsTableBody">
+                                    <tr>
+                                        <td colspan="4" class="empty-state">No backups yet</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Add/Edit Sale Modal -->
+    <div id="saleModal" class="modal hidden">
+        <div class="modal-content modal-large">
+            <span class="close">&times;</span>
+            <h2 id="modalTitle">Add New Sale</h2>
+            <form id="saleForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="dateBought">Date Bought *</label>
+                        <input type="date" id="dateBought" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="duration">Duration *</label>
+                        <select id="duration" required>
+                            <option value="">Select Duration</option>
+                            <option value="1 month">1 Month</option>
+                            <option value="6 Months">6 Months</option>
+                            <option value="1 Year">1 Year</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="dateExpiry">Date Expiry (Auto-calculated)</label>
+                        <input type="date" id="dateExpiry" readonly class="input-readonly">
+                    </div>
+                    <div class="form-group">
+                        <label for="customerName">Customer Name *</label>
+                        <input type="text" id="customerName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="planSelect">Select Plan *</label>
+                        <select id="planSelect" required>
+                            <option value="">Loading plans...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="cpu">CPU *</label>
+                        <input type="text" id="cpu" required placeholder="150%">
+                    </div>
+                    <div class="form-group">
+                        <label for="ram">RAM *</label>
+                        <input type="text" id="ram" required placeholder="6GB">
+                    </div>
+                    <div class="form-group">
+                        <label for="disk">DISK *</label>
+                        <input type="text" id="disk" required placeholder="10GB">
+                    </div>
+                    <div class="form-group">
+                        <label for="amount">Amount (PHP) *</label>
+                        <input type="number" id="amount" step="0.01" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="promo">Promo Code (Optional)</label>
+                        <input type="text" id="promo" placeholder="Enter promo code or discount amount">
+                    </div>
+                    <div class="form-group">
+                        <label for="paymentMethod">Payment Method *</label>
+                        <select id="paymentMethod" required>
+                            <option value="">Select Payment Method</option>
+                            <option value="Bank Transfer">Bank Transfer</option>
+                            <option value="GCash">GCash</option>
+                            <option value="PayMaya">PayMaya</option>
+                            <option value="Stripe">Stripe</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="status">Status *</label>
+                        <select id="status" required>
+                            <option value="">Select Status</option>
+                            <option value="Paid">Paid</option>
+                            <option value="Pending">Pending</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Sale</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add/Edit Plan Modal -->
+    <div id="planModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close plan-close" aria-label="Close plan form">&times;</span>
+            <h2 id="planModalTitle">Add Plan</h2>
+            <form id="planForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="planName">Plan Name *</label>
+                        <input type="text" id="planName" required maxlength="100" autocomplete="off" placeholder="e.g. Blaze Plan">
+                    </div>
+                    <div class="form-group">
+                        <label for="planCategory">Category</label>
+                        <input type="text" id="planCategory" maxlength="100" placeholder="e.g. Budget Dedicated">
+                    </div>
+                    <div class="form-group">
+                        <label for="planCpu">CPU *</label>
+                        <input type="text" id="planCpu" required maxlength="100" placeholder="e.g. 4 vCores">
+                    </div>
+                    <div class="form-group">
+                        <label for="planRam">RAM *</label>
+                        <input type="text" id="planRam" required maxlength="100" placeholder="e.g. 8GB">
+                    </div>
+                    <div class="form-group">
+                        <label for="planDisk">Disk *</label>
+                        <input type="text" id="planDisk" required maxlength="100" placeholder="e.g. 40GB">
+                    </div>
+                    <div class="form-group">
+                        <label for="planAmount">Amount (PHP) *</label>
+                        <input type="number" id="planAmount" required min="0" step="0.01" placeholder="0.00">
+                    </div>
+                </div>
+                <div id="planFormError" class="error-message" role="alert" aria-live="polite"></div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelPlanBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="savePlanBtn">Save Plan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Upgrade Sale Modal -->
+    <div id="upgradeModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close upgrade-close">&times;</span>
+            <h2>Upgrade Server</h2>
+            <p class="upgrade-current-info" id="upgradeCurrentInfo"></p>
+            <form id="upgradeForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="upgradeRam">Add RAM (optional)</label>
+                        <input type="text" id="upgradeRam" placeholder="e.g. 1 for +1GB">
+                    </div>
+                    <div class="form-group">
+                        <label for="upgradeCpu">Add CPU (optional)</label>
+                        <input type="text" id="upgradeCpu" placeholder="e.g. 1 for +1 vCore">
+                    </div>
+                    <div class="form-group">
+                        <label for="upgradeStorage">Add Storage (optional)</label>
+                        <input type="text" id="upgradeStorage" placeholder="e.g. 5 for +5GB">
+                    </div>
+                    <div class="form-group">
+                        <label for="upgradeAmount">Add Amount (PHP) (optional)</label>
+                        <input type="number" id="upgradeAmount" step="0.01" min="0" placeholder="e.g. 50">
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="upgradeCancelBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Upgrade</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Renew Sale Modal (Expirations tab) -->
+    <div id="renewModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close renew-close">&times;</span>
+            <h2>Renew Subscription</h2>
+            <p class="renew-current-info" id="renewCurrentInfo"></p>
+            <form id="renewForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="renewDuration">Duration *</label>
+                        <select id="renewDuration" required>
+                            <option value="">Select Duration</option>
+                            <option value="1 month">1 Month</option>
+                            <option value="6 Months">6 Months</option>
+                            <option value="1 Year">1 Year</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="renewAmount">Amount (Optional)</label>
+                        <input type="number" id="renewAmount" step="0.01" min="0" placeholder="PHP">
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="renewCancelBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Renew</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Customer Detail/Edit Modal -->
+    <div id="customerModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close" id="customerCloseBtn">&times;</span>
+            <h2>Customer Details</h2>
+            <form id="customerForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="customerNameInput">Name *</label>
+                        <input type="text" id="customerNameInput" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="customerDiscordInput">Discord ID</label>
+                        <input type="text" id="customerDiscordInput" placeholder="e.g. username#1234 or numeric ID">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="customerContactInput">Contact</label>
+                    <input type="text" id="customerContactInput" placeholder="Email, phone or other contact">
+                </div>
+                <div class="form-group">
+                    <label for="customerNotesInput">Notes</label>
+                    <textarea id="customerNotesInput" rows="3" placeholder="Anything worth remembering about this customer"></textarea>
+                </div>
+                <p id="customerFormError" style="color: #ed4245; margin-bottom: 0.5rem;"></p>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="customerDeleteBtn">Delete Customer</button>
+                    <span style="flex: 1;"></span>
+                    <button type="button" class="btn btn-secondary" id="customerCancelBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+            <div class="stats-section" style="margin-top: 1.5rem;">
+                <h3 class="stats-section-title">Purchase History</h3>
+                <div class="table-container">
+                    <table class="sales-table">
+                        <thead>
+                            <tr>
+                                <th>Date Bought</th>
+                                <th>Date Expiry</th>
+                                <th>Plan</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customerSalesBody">
+                            <tr><td colspan="5" class="empty-state">No purchases</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

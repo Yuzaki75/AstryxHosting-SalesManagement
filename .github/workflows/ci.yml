@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Syntax and smoke test
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check JavaScript syntax
+        run: npm run check
+
+      - name: Smoke test the API
+        env:
+          SESSION_SECRET: ci-only-session-secret-0123456789abcdef
+          DATABASE_PATH: ./ci-test.db
+          PORT: '3210'
+          COOKIE_SECURE: 'false'
+        run: |
+          node server.js > ci-server.log 2>&1 &
+          SERVER_PID=$!
+
+          ready=false
+          for i in $(seq 1 30); do
+            if curl -fsS http://localhost:3210/api/health > /dev/null 2>&1; then
+              ready=true
+              break
+            fi
+            sleep 1
+          done
+
+          if [ "$ready" != "true" ]; then
+            echo "Server did not become healthy in time"
+            cat ci-server.log
+            kill "$SERVER_PID" 2>/dev/null || true
+            exit 1
+          fi
+
+          curl -fsS http://localhost:3210/api/health
+          printf '\n'
+          kill "$SERVER_PID" 2>/dev/null || true
+          wait "$SERVER_PID" 2>/dev/null || true

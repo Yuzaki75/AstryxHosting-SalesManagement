@@ -1,5 +1,8 @@
 # AstryxNodes Sales Management System
 
+[![CI](https://github.com/Yuzaki75/AstryxHosting-SalesManagement/actions/workflows/ci.yml/badge.svg)](https://github.com/Yuzaki75/AstryxHosting-SalesManagement/actions/workflows/ci.yml)
+[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](LICENSE)
+
 A private sales operations dashboard for AstryxHosting. It runs on Node.js, Express, and SQLite, with optional Discord notifications and slash commands.
 
 ## Included features
@@ -107,6 +110,13 @@ The bot integration registers `/stats`, `/revenue`, `/expiring`, `/plans`, `/cus
 - Do not expose the sales dashboard publicly without access controls at the reverse proxy or network layer.
 - Use a strong `SESSION_SECRET` and rotate it if the current value is exposed. Existing sessions will be invalidated after rotation.
 - SQLite is intended for a single application instance with persistent local storage. Do not scale this app across multiple serverless instances using a local SQLite file.
+
+## Contributing and security
+
+- [CONTRIBUTING.md](CONTRIBUTING.md) — local setup, code conventions, and pull request checklist
+- [SECURITY.md](SECURITY.md) — how to report vulnerabilities privately and which secrets must never be committed
+- [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) — community expectations
+- Issues use templates for bug reports and feature requests. Please sanitize logs and remove customer data before posting.
 
 ## Project structure
 

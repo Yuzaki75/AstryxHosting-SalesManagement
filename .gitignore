@@ -8,6 +8,11 @@ sales.db-wal
 backups/
 *.corrupt-*
 npm-debug.log*
+*.log
+ci-test.db
+ci-test.db-*
+ci-server.log
+sales.zip
 .DS_Store
 .vscode/
 .idea/
